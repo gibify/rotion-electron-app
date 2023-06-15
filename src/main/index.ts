@@ -1,81 +1,76 @@
-import { app, shell, BrowserWindow } from "electron";
-import { createFileRoute, createURLRoute } from "electron-router-dom";
-import path from "path";
-import { electronApp, optimizer, is } from "@electron-toolkit/utils";
+import { app, shell, BrowserWindow } from 'electron'
+import { createFileRoute, createURLRoute } from 'electron-router-dom'
+import path from 'path'
+import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
-import "./ipc";
+import './ipc'
+import './store'
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
     width: 1120,
     height: 700,
     show: false,
-    backgroundColor: "#17141f",
-    titleBarStyle: "hiddenInset",
+    backgroundColor: '#17141f',
+    titleBarStyle: 'hiddenInset',
     trafficLightPosition: {
       x: 20,
       y: 20,
     },
     autoHideMenuBar: true,
-    ...(process.platform === "linux" ? { icon } : {}),
+    ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: path.join(__dirname, "../preload/index.js"),
+      preload: path.join(__dirname, '../preload/index.js'),
       sandbox: false,
     },
-  });
+  })
 
-  mainWindow.on("ready-to-show", () => {
-    mainWindow.show();
-  });
+  mainWindow.on('ready-to-show', () => {
+    mainWindow.show()
+  })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url);
-    return { action: "deny" };
-  });
+    shell.openExternal(details.url)
+    return { action: 'deny' }
+  })
 
   const devServerURL = createURLRoute(
     process.env.ELECTRON_RENDERER_URL!,
-    "main"
-  );
+    'main'
+  )
 
   const fileRoute = createFileRoute(
-    path.join(__dirname, "../renderer/index.html"),
-    "main"
-  );
+    path.join(__dirname, '../renderer/index.html'),
+    'main'
+  )
 
   if (is.dev && process.env.ELECTRON_RENDERER_URL) {
-    mainWindow.loadURL(devServerURL);
+    mainWindow.loadURL(devServerURL)
   } else {
-    mainWindow.loadFile(...fileRoute);
+    mainWindow.loadFile(...fileRoute)
   }
 }
 
-if (process.platform === "darwin") {
-  app.dock.setIcon(path.resolve("resources", "icon.png"));
+if (process.platform === 'darwin') {
+  app.dock.setIcon(path.resolve('resources', 'icon.png'))
 }
 
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId("com.electron");
+  electronApp.setAppUserModelId('com.electron')
 
-  app.on("browser-window-created", (_, window) => {
-    optimizer.watchWindowShortcuts(window);
-  });
+  app.on('browser-window-created', (_, window) => {
+    optimizer.watchWindowShortcuts(window)
+  })
 
-  createWindow();
+  createWindow()
 
-  app.on("activate", function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+})
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
   }
-});
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
+})
