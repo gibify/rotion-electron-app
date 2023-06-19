@@ -1,3 +1,3 @@
-### Notion is a alternative witten with Electron
+# Notion is an alternative written with Electron
 
-![](`/public/Desktop.png`)
+![desktop-electron-app](https://github.com/gibify/rotion-electron-app/blob/main/public/Desktop.png)
